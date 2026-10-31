@@ -53,8 +53,9 @@ We also lose on several rows, and the [head-to-head](#head-to-head) and
 [their benchmarks](#the-other-builds-own-benchmarks-run-on-dgx-splice) list them: single-stream decode on most of the
 other builds' own benchmarks (kit_bench, v41bench, v41_suite), prose and thinking-mode decode (also against MiaAI on
 our sparkDash port), decode after a 128K
-prompt, a short request behind a long prompt or beside background prefills (our largest gap), streams beyond 4, and
-contexts beyond 327,680. Forced tool calls have a [known issue](#known-issues).
+prompt, a short request behind a long prompt or beside background prefills (our largest gap),
+[tool-eval-bench](#tool-eval-bench-301) at effort max by 1 point (96 against 97), streams beyond 4, and contexts beyond
+327,680. Forced tool calls had a [known issue](#known-issues), fixed in our production on 2026-10-31.
 
 **Image:** `ghcr.io/henryous/deepseek-v41-1017-dgx-spark:v5` (linux/arm64,
 `sha256:8fc2c99a3562e99d81d2a05b8345d12726def0a027410d14d0eb0763de8309e4`), unmodified; `start.sh` stages our overlays
@@ -64,8 +65,8 @@ from this checkout and mounts them read-only. **Install:** [docs/install.md](doc
 This repository is DGX sPLIce as it runs in production: every number we measured on it, the tools that measured them,
 the raw result files and the code for every piece. Two things are not in this commit yet: the prefix tier's code, which
 follows in the next push, and the ported suites and raw files behind the 2026-10-31 runs of the other builds' own
-benchmarks (llama-benchy is public and was run unmodified). Issues, measurements on your own hardware and pull requests
-are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+benchmarks (llama-benchy and tool-eval-bench are public and were run unmodified; their raw files are not in this commit
+either). Issues, measurements on your own hardware and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Hugging Face:** [card](https://huggingface.co/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload) ·
 [served weights](https://huggingface.co/ProprietaryLegal/DeepSeek-V4.1-Flash-1017-EXL3-2.75bpw-LegalWeighted-DGX-Spark) ·
@@ -190,7 +191,7 @@ theirs) / theirs. For time rows a negative delta means we are faster.
 - **port**: a re-implementation of a protocol whose prompts are not published, or a port that deviates in a way that
   matters (named in the row).
 - **different benchmark**: another benchmark of the same quantity; an indication only.
-- **settings differ**: the same tool and grid, with server settings that differ (named in the row).
+- **settings differ**: the same tool and grid, with server or run settings that differ (named in the row).
 
 **Where we win** (same protocol, margin outside noise):
 
@@ -204,6 +205,8 @@ theirs) / theirs. For time rows a negative delta means we are faster.
 
 Level with the others: Elevatormusic's structured-output group 6/6 (strict `json_schema` 8/8 with thinking off and on),
 its reasoning and no-leak checks, and `v41bench` per-stream speed at 4 streams (41.38 against tonyd2wild's 41.39).
+On tool-eval-bench (settings differ) we are level with bernisse's best run of MiaAI-Lab's 1017 recipe at effort max (96)
+and with dashtotherock at effort high (92); see [tool-eval-bench](#tool-eval-bench-301).
 
 **Where we lose** (stated as plainly as the wins):
 
@@ -218,8 +221,9 @@ its reasoning and no-leak checks, and `v41bench` per-stream speed at 4 streams (
 | Elevatormusic `v41_suite`, 1 request: prose / code / prose thinking / code thinking | 45.9 / 87.1 / 46.9 / 64.7 | TensorFold 56.8 / 92.2 / 54.2 / 71.6 | -19.3 / -5.5 / -13.5 / -9.6 % | same protocol |
 | Elevatormusic `v41_bench`, prose, 2 / 3 / 4 streams; code, 1 stream | 54.9 / 68.9 / 73.9; 73.4 | TensorFold 73.5 / 82.3 / 94.4; 94.1 | -25.3 / -16.3 / -21.7 %; -22.0 % | same protocol; its aggregate includes the first-token wait, and one of our two 1-stream code repeats waited 1.9 s |
 | decode while answering a needle, after 131K / 315K tokens | 44.2 / 38.2 tok/s | after 128-131K: bertholomus 99.2, sudoingX 81.3, HeNryous v20 73.7, jayleaton 64.9 | -32 to -55 % | different benchmark |
-| tool calls: Elevatormusic `v41_suite` tools group | 10/12 | 12/12 | -2 | same protocol; the two forced-choice cases, see [known issues](#known-issues) |
+| tool calls: Elevatormusic `v41_suite` tools group | 10/12 | 12/12 | -2 | same protocol; the two failures are the forced-choice cases of the [known issue](#known-issues). The same two requests have passed in production since the 2026-10-31 fix; the suite was not re-run, so the score stays 10/12 |
 | tool calls: jayleaton `chains.py`, thinking off / effort high | 10/12 / 9/12 | 11/12 (their earlier run) | -1 / -2 points | same protocol; retry-after-error scores 0 in both modes |
+| tool-eval-bench 3.0.1 Hard Mode, 104 scenarios, effort max | 96 (200/208) | 0rand, forum 386125 #271 / #288: 97 (202/208); dashtotherock, #307: 97 (202/208) | -1 point | settings differ: `--parallel 8` there, 4 here; #288 at temperature 0.6. [Details](#tool-eval-bench-301) |
 | longest needle | 315,207 tokens, 3/3 (our 327,680 limit) | bertholomus 1,039,836, 3/3; MiaAI 1017 479,012, 3/3 | | a configuration limit |
 
 Draft acceptance explains part of the single-stream gap: on kit_bench's prose prompt the drafter has 1.19 of its 5
@@ -233,6 +237,42 @@ One row is withheld, in both directions: our `v41_suite` cold 8K prefill read 1,
 that request waited about 2 s before its first token that the same pass's 8,167-token needle (2,586.9 tok/s) did not.
 It is not counted until the delay is explained. Every table, source and commit, plus the different-benchmark prefill
 rows: [docs/comparison.md](docs/comparison.md#the-other-builds-own-benchmarks-2026-10-31).
+
+## tool-eval-bench 3.0.1
+
+[tool-eval-bench](https://github.com/SeraphimSerapis/tool-eval-bench) (TEB), SeraphimSerapis's tool-calling benchmark
+and the tool-calling score most often posted for this model on two Sparks, at `3.0.1.dev7+g887b537` (main; 3.0.1 has no
+tag or PyPI release), run unmodified against production (`ebc29ed8` plus the xgrammar flag of the
+[known issue](#known-issues)) on 2026-10-31, 17:13-17:44 UTC: Hard Mode, 104 scenarios / 208 points, seed 42,
+temperature 0, thinking on, `max_tokens` 16384 (the tool's default), `--parallel 4` (our server runs at most 4 streams).
+Same clock, power and request rules as the sections above: every one of its 688 requests carried a fresh `cache_salt`
+and a unique first line, and every one was answered with HTTP 200. Each scenario scores pass 2, partial 1 or fail 0; the
+score is points / 208 x 100.
+
+| Effort | DGX sPLIce | Pass / partial / fail | Lowest category |
+|-|-|-|-|
+| max | **96** (200/208) | 98 / 4 / 2 | Autonomous Planning 67 % |
+| high | **92** (192/208) | 93 / 6 / 5 | Safety & Boundaries 85 % |
+
+The published runs with the same 104 scenarios and the same grading code (unchanged from v3.0.1.dev6 to `887b537`), all
+in [NVIDIA forum topic 386125](https://forums.developer.nvidia.com/t/386125):
+
+| Their run | Theirs | DGX sPLIce | Delta | Label |
+|-|-|-|-|-|
+| 0rand, TensorFold, posts #271 and #288, v3.0.1.dev6, effort max | 97 (202/208) | 96 (200/208) | **-1** | settings differ: `--parallel 8` there; #288 at temperature 0.6 |
+| dashtotherock, 0rand's code (main_0rand branch), post #307, effort max | 97 (202/208) | 96 (200/208) | **-1** | settings differ: `--parallel 8` there |
+| dashtotherock, post #307, effort high | 92 | 92 (192/208) | level | settings differ: `--parallel 8` there |
+| bernisse, MiaAI-Lab's 1017 recipe with patch 0039, post #322, v3.0.1.dev7, effort max | 96 (200/208) | 96 (200/208) | level | settings differ: `--parallel 1` there; the same seed, Hard Mode, temperature 0 and `max_tokens` 16384 |
+| bernisse, the same recipe without that patch, post #322, effort max / high | 94 (196/208) / 90 (187/208) | 96 / 92 | +2 / +2 | settings differ: `--parallel 1` there |
+
+At temperature 0 the `--parallel` setting mostly changes timing, but a different batch can move a greedy token now and
+then, so 1-2 points is within the noise between these runs. We still list the 1-point deficit at effort max as a loss,
+and we do not count the 2-point leads as wins. The older TEB 2.x posts (88-97 scenarios) are a different benchmark, so
+PILCOTHINK's 92 (179/194, TEB 2.8.1, [forum topic 386574](https://forums.developer.nvidia.com/t/386574), post 1) is not
+set against these runs. Re-scored on those 97 scenario ids, ours read 96 (187/194) at max and 94 (182/194) at high, but
+32 of the 97 scenario files and the shared grading helpers changed in 3.0, so that is an indication only. TEB's safety
+gate flags scenario TC-92 (tenant isolation with same-named resources) in both runs, and TC-98 (multi-hop prompt
+injection) at high; PILCOTHINK's post carries the same TC-92 warning.
 
 ## llama-benchy 0.4.0
 
@@ -251,7 +291,11 @@ Standard table (pp2048 / tg32, one stream, `--latency-mode generation --no-cache
 | 16,384 | 2,512.40 ± 25.28 | 7.51 s | 52.55 ± 8.35 |
 | 32,768 | 2,542.76 ± 9.23 | 13.87 s | 59.92 ± 4.21 |
 | 65,536 | 2,495.40 ± 47.12 | 27.27 s | 55.72 ± 7.05 |
-| 131,072 | rerun pending: a benchmark-harness timeout, not a server fault | | |
+| 131,072 | 2,577.94 ± 5.09 | 51.81 s | 68.36 ± 18.23 |
+
+The 131,072 row's first attempt hit a benchmark-harness timeout, not a server fault; it was rerun at 17:45-17:48 UTC
+(11 requests) on production after its restart with the xgrammar flag ([known issues](#known-issues)), while the other
+rows come from the 11:01 UTC run before it. The flag changes only structured-output requests, and llama-benchy sends none.
 
 Concurrency (pp2048 / tg128 at 1, 2 and 4 streams, `--latency-mode generation --no-cache`). tg is the aggregate; the
 per-request tg and the aggregate peak are in parentheses:
@@ -320,8 +364,12 @@ separate configuration and labelled as such.
 ## Known issues
 
 **Forced tool calls can return HTTP 500 on vLLM's DeepSeek V4.1 tool path.** Seen on vLLM 0.31.1.dev0 (the v5 image)
-with `--tool-call-parser deepseek_v41` and the default structured-outputs backend. Status: fix built and tested offline;
-production install pending.
+with `--tool-call-parser deepseek_v41` and the default structured-outputs backend. Status: fixed in our production on
+2026-10-31 with `--structured-outputs-config.backend xgrammar`. After the restart, forced (`required`) and named tool
+calls and strict tools in `auto` mode work, a `pattern` + `maxLength` schema gets the expected HTTP 400, greedy output is
+identical to before (6 prompts, 3 runs each), and a 15-minute health watch passed. The launch file in this commit
+(`offload/launch/dsv41_tp2_offload.sh`, exported from `ebc29ed8`) does not set the flag yet; add it to the `vllm serve`
+arguments next to `--tool-call-parser`.
 
 - **Symptom.** A request with `tool_choice: "required"` or a named function
   (`{"type": "function", "function": {"name": ...}}`) fails with HTTP 500 before any token is generated, and the engine
@@ -342,7 +390,8 @@ production install pending.
   on xgrammar with its length bound dropped (a log warning, not an error). `VLLM_ENFORCE_STRICT_TOOL_CALLING=0` also
   avoids the 500, but forced calls are then generated as JSON instead of DSML, and `strict` is ignored.
 
-Two of Elevatormusic's twelve `v41_suite` tool checks are exactly these forced-choice cases; they are our 10/12 above.
+Two of Elevatormusic's twelve `v41_suite` tool checks are exactly these forced-choice cases; they are our 10/12 above,
+measured before the fix. The same two requests have passed in production since; the suite itself was not re-run.
 
 ## Reproduce
 
@@ -361,14 +410,18 @@ llama-benchy --base-url http://<head>:8000/v1 --model <served model> --tokenizer
     --pp 2048 --tg 32 --depth 0 4096 8192 16384 32768 65536 131072 --latency-mode generation --no-cache
 llama-benchy ... --pp 2048 --tg 128 --depth 0 4096 8192 --concurrency 1 2 4 --latency-mode generation --no-cache
 llama-benchy ... --pp 2048 --tg 128 1024 --depth 0 1024 4096
+# tool-eval-bench 3.0.1.dev7 (SeraphimSerapis/tool-eval-bench, main at 887b537), Hard Mode; then the same with "high"
+python3 -m tool_eval_bench run --base-url http://<head>:8000 --model <served model> --backend vllm --hardmode \
+    --seed 42 --temperature 0 --parallel 4 --timeout 1800 --json-file teb-max.json --backend-kwargs \
+    '{"chat_template_kwargs":{"enable_thinking":true,"thinking":true,"thinking_mode":"enabled","reasoning_effort":"max"},"reasoning_effort":"max"}'
 ```
 
 Our two tools, `sparkbench.py` and `bench.py`, use only the Python standard library and talk to any OpenAI-compatible
 server. Lock the GPU clock first
 (`sudo nvidia-smi -lgc 0,2300` on both Sparks) and record it with the result; `tools/node_watch.py` logs clocks,
-temperatures and free memory during a run. Our llama-benchy runs went through a local proxy that gave every request a
-fresh `cache_salt` and a unique first line; without one, turn the server's prefix cache off to measure on the same
-basis. Please send results as a
+temperatures and free memory during a run. Our llama-benchy and tool-eval-bench runs went through a local proxy that
+gave every request a fresh `cache_salt` and a unique first line; without one, turn the server's prefix cache off to
+measure on the same basis. Please send results as a
 [performance report](https://github.com/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload/issues/new?template=performance_report.yml).
 
 ## Our own cells: long legal prompts at T=1, thinking on

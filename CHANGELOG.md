@@ -2,6 +2,28 @@
 
 Dates are UTC. "Production" is the commit serving on our two Sparks at the time.
 
+## 2026-10-31, third update: the tool_choice fix in production, tool-eval-bench, the 131K llama-benchy row
+
+- Fixed in our production: the known issue with `tool_choice` "required" and named tools (HTTP 500). Production
+  (`ebc29ed8`) was restarted on 2026-10-31 with `--structured-outputs-config.backend xgrammar` added to its launch file,
+  the only change to the serving configuration. Checked after the restart: forced and named tool calls and strict tools
+  in `auto` mode work; a `pattern` + `maxLength` schema gets HTTP 400 "not supported by xgrammar", the documented
+  trade-off; greedy output is identical to before on 6 prompts, 3 runs each; a 15-minute health watch passed. The README
+  entry stays, for other V4.1 vLLM users. The launch file in this repository does not carry the flag yet.
+- MEASURED, 17:13-17:44 UTC, after the fix: tool-eval-bench 3.0.1.dev7 (`887b537`), Hard Mode, 104 scenarios, seed 42,
+  temperature 0, `--parallel 4`: 96 (200/208) at effort max, 92 (192/208) at high. Against the published runs of the
+  same scenarios and grading (NVIDIA forum topic 386125), all labelled settings differ: 1 point behind 0rand's 97
+  (#271 / #288) and dashtotherock's 97 (#307) at max, a loss; level with bernisse's best run of MiaAI-Lab's 1017 recipe
+  (96 with patch 0039, #322) at max and with dashtotherock's 92 at high; 2 points ahead of bernisse's runs without that
+  patch (94 at max, 90 at high), within the 1-2 points that batching can move, so not counted as wins.
+- MEASURED, 17:45-17:48 UTC: the llama-benchy 0.4.0 standard row at depth 131,072, which the second update left pending:
+  pp2048 2,577.94 ± 5.09 t/s, first response 51.81 s; tg32 68.36 ± 18.23 t/s (3 runs). It ran on production after the
+  restart; the xgrammar flag changes only structured-output requests, and llama-benchy sends none.
+- `v41_suite` tools stays 10/12: the suite was not re-run. Its two failures, the forced-choice requests, have passed in
+  production since the fix.
+- Hero unchanged: none of the new numbers is a same-protocol win.
+- Not in this commit: the raw tool-eval-bench and llama-benchy result files.
+
 ## 2026-10-31, second update: the name DGX sPLIce, and new measurements
 
 - Name: the build is now called **DGX sPLIce** (the PLI is Proprietary Legal Intelligence): DeepSeek V4.1 Flash served

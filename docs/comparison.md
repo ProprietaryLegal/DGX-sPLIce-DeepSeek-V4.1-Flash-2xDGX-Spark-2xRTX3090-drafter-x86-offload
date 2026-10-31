@@ -122,7 +122,7 @@ Label: same protocol. Our values are medians of 3 suite runs; Elevatormusic's ar
 | ORCHID needle at 200K, request time | **76.29 s** | 109.8 s | **1.44x faster** | |
 | schema group | 6/6 (strict `json_schema` 5/5 thinking off and 3/3 thinking on; `json_object`; choice; regex; prompt-only 5/5) | 32/32 for the whole suite | parity |
 | reasoning group and no-leak check | all pass | pass | parity |
-| tools group | 10/12 (`tool_choice_required` and `tool_choice_named` fail) | 12/12 | -2; see [known issues](../README.md#known-issues) |
+| tools group | 10/12 (`tool_choice_required` and `tool_choice_named` fail) | 12/12 | -2; see [known issues](../README.md#known-issues) (fixed since; not re-run) |
 
 The 8K cold-prefill row is withheld in both directions: that request waited about 2 s before its first token, which the
 same pass's 8,167-token needle (2,586.9 tok/s) did not. It is not counted until the delay is explained.
@@ -201,9 +201,10 @@ The kit_bench prefill rows can become same protocol once our port gains kit_benc
 | jayleaton `chains.py`, thinking off | 10/12 (retry-after-error 0) | 11/12, an earlier run on a different weights build; its current build reports chains 6/6, counted per scenario | same protocol |
 | jayleaton `chains.py`, effort high | 9/12 (retry-after-error 0, edit-config 1) | 11/12, the same earlier run | same protocol |
 | Elevatormusic `v41_suite` tools group | 10/12 (`tool_choice_required` and `tool_choice_named` fail) | 12/12 | same protocol |
-| tool-eval-bench in full | not run yet | | |
+| tool-eval-bench 3.0.1 Hard Mode in full (104 scenarios), effort max / high, 2026-10-31 after the tool_choice fix | 96 (200/208) / 92 (192/208) | max: 0rand 97 (forum 386125 #271 / #288), dashtotherock 97 (#307), bernisse on MiaAI-Lab's 1017 recipe 96 with patch 0039 and 94 without (#322); high: dashtotherock 92, bernisse 90 | settings differ (`--parallel` 8 or 1 there, 4 here); see the [README](../README.md#tool-eval-bench-301) |
 
-The two `v41_suite` failures are the forced-choice error in the README's [known issues](../README.md#known-issues).
+The two `v41_suite` failures are the forced-choice error in the README's [known issues](../README.md#known-issues). Both
+requests have passed in production since the 2026-10-31 fix; the suite was not re-run.
 
 ### sparkDash (MiaAI)
 
@@ -339,6 +340,7 @@ Lock and record the GPU clock (`tools/node_watch.py` logs it) and state it with 
 bertholomus's `kit_bench` sets a and b, tonyd2wild's `v41bench`, Elevatormusic's `v41_suite` and `v41_bench`,
 HeNryous's `fair_bench` and three-code needle, jayleaton's tool chains and ToolCall-15
 ([results](#the-other-builds-own-benchmarks-2026-10-31)); the ported scripts and their raw files are not in this
-repository yet. Still to port: tool-eval-bench in full, 8-32 stream sweeps and 1M needles (we serve at most 327,680
-tokens). For llama-benchy, which is public, see the [README](../README.md#llama-benchy-040). If you maintain one of these
-recipes and want a number corrected or a condition stated differently, please open an issue.
+repository yet. Still to port: 8-32 stream sweeps and 1M needles (we serve at most 327,680 tokens). For llama-benchy
+and tool-eval-bench, which are public and were run unmodified, see the README
+([llama-benchy](../README.md#llama-benchy-040), [tool-eval-bench](../README.md#tool-eval-bench-301)). If you maintain
+one of these recipes and want a number corrected or a condition stated differently, please open an issue.

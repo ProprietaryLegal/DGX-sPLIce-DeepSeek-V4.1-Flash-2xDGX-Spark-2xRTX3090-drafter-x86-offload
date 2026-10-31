@@ -13,6 +13,7 @@ project's, the section says so and links its source.
 | [Where the prefill time goes](#where-the-prefill-time-goes-2026-10-31-census-cold-32k) | kernel census of a cold 32K prompt on production: every line, both ranks, every chunk |
 | [The other builds' own benchmarks](comparison.md#the-other-builds-own-benchmarks-2026-10-31) | kit_bench, v41bench, v41_suite, v41_bench, fair_bench, needles and tool checks run on DGX sPLIce, 2026-10-31 (in comparison.md) |
 | [llama-benchy 0.4.0](../README.md#llama-benchy-040) | the standard, concurrency and PILCOTHINK-grid tables, 2026-10-31 (in the README) |
+| [tool-eval-bench 3.0.1](../README.md#tool-eval-bench-301) | Hard Mode at effort max and high against the published runs, 2026-10-31 (in the README) |
 | [Capacity](#capacity-engine-log), [configuration history](#configuration-history-2026-10-22-and-2026-10-23) and [decode profile](#where-the-decode-time-goes-2026-10-26-profile-2150-mhz) | what each offload piece changed, and where a decode round's time goes |
 
 ## sparkDash protocol, 2026-10-31
