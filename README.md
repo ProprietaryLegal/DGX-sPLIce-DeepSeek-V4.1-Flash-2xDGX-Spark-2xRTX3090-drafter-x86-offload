@@ -1,4 +1,4 @@
-# DGX sPLIce: DeepSeek-V4.1-Flash on 2x DGX Spark + 2x RTX 3090 x86 offload
+# DGX sPLIce: DeepSeek-V4.1-Flash on 2x DGX Spark + 2x RTX 3090 drafter, x86 offload
 
 [![proprietarylegal.ai](https://img.shields.io/badge/proprietarylegal.ai-website-0B3D91)](https://proprietarylegal.ai) [![PLI Labs](https://img.shields.io/badge/PLI%20Labs-research-1F6FEB)](https://proprietarylegal.ai/labs.html) [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-card-FFD21E)](https://huggingface.co/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload) [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE) [![Hardware: 2x DGX Spark + x86](https://img.shields.io/badge/hardware-2x%20DGX%20Spark%20%2B%20x86%20offload-76B900)](#requirements) [![Raw data: runs/](https://img.shields.io/badge/raw%20data-runs%2F-555555)](runs/)
 
@@ -367,9 +367,9 @@ separate configuration and labelled as such.
 with `--tool-call-parser deepseek_v41` and the default structured-outputs backend. Status: fixed in our production on
 2026-10-31 with `--structured-outputs-config.backend xgrammar`. After the restart, forced (`required`) and named tool
 calls and strict tools in `auto` mode work, a `pattern` + `maxLength` schema gets the expected HTTP 400, greedy output is
-identical to before (6 prompts, 3 runs each), and a 15-minute health watch passed. The launch file in this commit
-(`offload/launch/dsv41_tp2_offload.sh`, exported from `ebc29ed8`) does not set the flag yet; add it to the `vllm serve`
-arguments next to `--tool-call-parser`.
+identical to before (6 prompts, 3 runs each), and a 15-minute health watch passed. The launch file in this repository
+(`offload/launch/dsv41_tp2_offload.sh`) now sets the flag too, in the `vllm serve` arguments after `--tool-call-parser`,
+exactly as production runs it.
 
 - **Symptom.** A request with `tool_choice: "required"` or a named function
   (`{"type": "function", "function": {"name": ...}}`) fails with HTTP 500 before any token is generated, and the engine
@@ -422,7 +422,7 @@ server. Lock the GPU clock first
 temperatures and free memory during a run. Our llama-benchy and tool-eval-bench runs went through a local proxy that
 gave every request a fresh `cache_salt` and a unique first line; without one, turn the server's prefix cache off to
 measure on the same basis. Please send results as a
-[performance report](https://github.com/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload/issues/new?template=performance_report.yml).
+[performance report](https://github.com/ProprietaryLegal/DGX-sPLIce-DeepSeek-V4.1-Flash-2xDGX-Spark-2xRTX3090-drafter-x86-offload/issues/new?template=performance_report.yml).
 
 ## Our own cells: long legal prompts at T=1, thinking on
 

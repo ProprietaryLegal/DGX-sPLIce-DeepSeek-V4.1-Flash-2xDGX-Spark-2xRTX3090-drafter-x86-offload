@@ -4,7 +4,7 @@ Bug reports, measurements on other hardware, corrections to our numbers or credi
 
 ## Reporting a bug
 
-Open a [bug report](https://github.com/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload/issues/new?template=bug_report.yml).
+Open a [bug report](https://github.com/ProprietaryLegal/DGX-sPLIce-DeepSeek-V4.1-Flash-2xDGX-Spark-2xRTX3090-drafter-x86-offload/issues/new?template=bug_report.yml).
 Include the commit you run, which components are on (remote Engram, remote drafter, async, prefix tier), the engine
 log lines around the failure and the output of `./status.sh`. Please remove addresses, host names and anything from
 your prompts that you would not post publicly.
@@ -12,7 +12,7 @@ your prompts that you would not post publicly.
 ## Reporting a measurement
 
 Run `tools/bench.py` and attach its JSON file to a
-[performance report](https://github.com/ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload/issues/new?template=performance_report.yml).
+[performance report](https://github.com/ProprietaryLegal/DGX-sPLIce-DeepSeek-V4.1-Flash-2xDGX-Spark-2xRTX3090-drafter-x86-offload/issues/new?template=performance_report.yml).
 The JSON holds token counts and timings only, never prompt or generated text. State the GPU clock cap and what else
 ran on the machines. Numbers measured on another recipe are just as welcome: the point is same-conditions comparisons.
 

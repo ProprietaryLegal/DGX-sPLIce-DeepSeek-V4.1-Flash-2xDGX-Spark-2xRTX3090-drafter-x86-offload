@@ -71,6 +71,13 @@
   "offload/promote/k1/README.md"
  ],
  "name": "DGX sPLIce",
+ "post_export_changes": [
+  {
+   "change": "adds the vllm serve argument --structured-outputs-config.backend xgrammar (with a comment), as production has served since 2026-10-31; every other line is unchanged",
+   "date": "2026-11-01",
+   "path": "offload/launch/dsv41_tp2_offload.sh"
+  }
+ ],
  "prefix_tier": "drop",
  "private_hex_runs_zeroed": {},
  "production_files_taken": 508,

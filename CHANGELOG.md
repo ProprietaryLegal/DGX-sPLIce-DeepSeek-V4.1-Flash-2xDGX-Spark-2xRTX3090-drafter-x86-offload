@@ -2,6 +2,17 @@
 
 Dates are UTC. "Production" is the commit serving on our two Sparks at the time.
 
+## 2026-11-01: the repository's new name, and the xgrammar flag in the launch file
+
+- Renamed on GitHub to `DGX-sPLIce-DeepSeek-V4.1-Flash-2xDGX-Spark-2xRTX3090-drafter-x86-offload`, so the name says
+  what the build is: DGX sPLIce, two DGX Sparks and the 2x RTX 3090 drafter on the x86 host. The old address,
+  `ProprietaryLegal/DeepSeek-V4.1-Flash-2xDGX-Spark-x86-offload`, redirects here for the web page and for `git clone`
+  and `git pull`; existing clones need no change. The Hugging Face card keeps its name.
+- `offload/launch/dsv41_tp2_offload.sh` now passes `--structured-outputs-config.backend xgrammar` to `vllm serve`, the
+  fix for the forced-tool-call known issue that production has run since 2026-10-31. Apart from comments, the launch file
+  is now line for line what production runs. `.publication/SOURCE.json` records the change.
+- No new measurements: every number in the README and the docs is unchanged.
+
 ## 2026-10-31, third update: the tool_choice fix in production, tool-eval-bench, the 131K llama-benchy row
 
 - Fixed in our production: the known issue with `tool_choice` "required" and named tools (HTTP 500). Production

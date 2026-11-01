@@ -81,6 +81,11 @@ launch() {   # $1 node  $2 rank  $3 master ip  $4 self ip  $5 gid
     echo "  --max-num-batched-tokens $MAX_BATCH --load-format $LOAD_FORMAT \\"
     echo "  --engram-config '$ENGRAM' --compilation-config '$GRAPH' --kernel-config '$KERNEL_CONFIG' \\"
     echo "  --enable-auto-tool-choice --tool-call-parser deepseek_v41 --reasoning-parser deepseek_v41 \\"
+    # One structured-outputs backend for every request. Under "auto" the engine keeps the backend of its first structured
+    # request; once that is guidance, every tool_choice=required, named-tool or strict tool request fails with HTTP 500
+    # (guidance cannot read V4.1's structural tag: KeyError 'triggers'; README "Known issues"). Schemas only guidance
+    # could compile get HTTP 400 instead. The dotted form needs no JSON quoting here.
+    echo "  --structured-outputs-config.backend xgrammar \\"
     [ -n "$SPEC" ] && echo "  --speculative-config '$SPEC' \\"
     [ -n "$KV_BYTES" ] && echo "  --kv-cache-memory-bytes $KV_BYTES \\"
     [ "$TEXT_ONLY" = 1 ] && echo "  --limit-mm-per-prompt '{\"image\":0}' \\"
