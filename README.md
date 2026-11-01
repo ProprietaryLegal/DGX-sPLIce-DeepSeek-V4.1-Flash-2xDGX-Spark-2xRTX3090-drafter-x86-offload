@@ -606,6 +606,7 @@ history and their own tests; their code is included here as it runs in productio
 | [dsv41-native-1017-drafter-sm86](https://github.com/ProprietaryLegal/dsv41-native-1017-drafter-sm86), [dsv41-exact-acceptance-ceiling](https://github.com/ProprietaryLegal/dsv41-exact-acceptance-ceiling) | research only, not serving |
 | [dsv41-longctx-bench-tools](https://github.com/ProprietaryLegal/dsv41-longctx-bench-tools), [dsv41-window-harness](https://github.com/ProprietaryLegal/dsv41-window-harness) | earlier measurement tools |
 | [deepseek-v41-1017-dgx-spark](https://github.com/ProprietaryLegal/deepseek-v41-1017-dgx-spark), [dgx-spark-deepseek-v41](https://github.com/ProprietaryLegal/dgx-spark-deepseek-v41) | our forks of the HeNryous image and the sudoingX launcher |
+| [Volta sPLIce](https://github.com/ProprietaryLegal/Volta-sPLIce-DeepSeek-V4.1-Flash-8xV100-SXM2-PP2xTP4-resident-Engram) | the sister project: the same model on 8x V100-SXM2-32GB (PP2 x TP4, Engram resident in host RAM) |
 
 ## Credits and licence
 
