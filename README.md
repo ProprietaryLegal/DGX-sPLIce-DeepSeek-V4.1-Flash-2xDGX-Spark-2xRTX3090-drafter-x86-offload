@@ -87,9 +87,9 @@ either). Issues, measurements on your own hardware and pull requests are welcome
 
 **[Volta sPLIt](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4)** serves the same DeepSeek-V4.1-Flash-1017 on eight V100-SXM2-32GB cards from 2018: ISTA-DASLab's
 GSQ-RCO GGUF (IQ2_XXS experts, IQ4_NL Engram), every expert resident in GPU memory, split pipeline-parallel 2 x
-tensor-parallel 4 across two NVLink boards, on our port of 1Cat-vLLM #1277. Several of its speed levers are ports of
-DGX sPLIce's (coupled sampled drafts, plan fusion, the router floor, coupled-draft sharding), and its long-prompt numbers
-were taken with the same tools ([dsv41-longctx-bench-tools](https://github.com/ProprietaryLegal/dsv41-longctx-bench-tools)).
+tensor-parallel 4 across two NVLink boards, on our port of 1Cat-vLLM #1277. Several Volta sPLIt levers reuse code from our own
+Sparks research lane (plan fusion, router floor, coupled-draft sharding); coupled sampled drafts come from
+[TensorFold #25](https://github.com/Elevatormusic/TensorFold/pull/25). Its long-prompt numbers were taken with the same tools ([dsv41-longctx-bench-tools](https://github.com/ProprietaryLegal/dsv41-longctx-bench-tools)).
 
 | one request at a time | Volta sPLIt (8x V100) | DGX sPLIce (2x DGX Spark) |
 | --- | ---: | ---: |
