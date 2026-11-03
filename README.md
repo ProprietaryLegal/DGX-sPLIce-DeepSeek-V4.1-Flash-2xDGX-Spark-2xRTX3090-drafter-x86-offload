@@ -100,8 +100,8 @@ Sparks research lane (plan fusion, router floor, coupled-draft sharding); couple
 | first token at 32K / 150K | 22.3-22.5 s / 111.1-111.7 s | 14.5 s / 68.6 s |
 | streams | 1 | up to 4 |
 
-<sub>Volta sPLIt: MEASURED 2026-11-03 on its host, before its last kernel change; DGX sPLIce: MEASURED 2026-10-23 with the
-same tools and conditions (temperature 1, thinking high, 1,500 tokens, cold prompts). Different quantizations of the same
+<sub>Volta sPLIt: MEASURED 2026-11-03 on its host, before its last kernel change; DGX sPLIce: MEASURED 2026-10-23, before PP4,
+the 2,300 MHz clock cap and TCFIX, with the same tools and conditions (temperature 1, thinking high, 1,500 tokens, cold prompts). Different quantizations of the same
 model. The Sparks read prompts faster and serve several streams; the V100s decode one stream faster.</sub>
 
 ### Head-to-head benchmarks: in progress
