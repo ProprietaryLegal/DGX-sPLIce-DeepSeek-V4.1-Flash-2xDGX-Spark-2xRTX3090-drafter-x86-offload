@@ -4,6 +4,8 @@
 
 Built by **Nick Mermiges, Esq.**, founder of [PLI Labs](https://proprietarylegal.ai/labs.html) · [proprietarylegal.ai](https://proprietarylegal.ai)
 
+> **Sister build: [Volta sPLIt](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4), ~118 tok/s decode and ~121 tok/s thinking on, single stream, on eight 2018 V100s.** [See below](#sister-build-volta-split-on-8x-v100).
+
 DGX sPLIce (the PLI is Proprietary Legal Intelligence) is our name for this build: DeepSeek V4.1 Flash served across two DGX Sparks, spliced with an x86 box that drafts tokens for them.
 
 DeepSeek-V4.1-Flash-1017 (EXL3, 2.75 bpw) served by vLLM across two NVIDIA DGX Spark / GB10 nodes in tensor parallel. A third,
@@ -78,6 +80,34 @@ either). Issues, measurements on your own hardware and pull requests are welcome
 > Published by [PLI Labs](https://proprietarylegal.ai/labs.html), the open research arm of [Proprietary Legal Intelligence](https://proprietarylegal.ai). PLI builds AI systems around a legal organization's own work product, combining retrieval, staged workflows, validation, and attorney review. Visit [proprietarylegal.ai](https://proprietarylegal.ai) to explore our work and discuss what your organization needs.
 
 <!-- pli:blurb:end -->
+
+## Sister build: Volta sPLIt on 8x V100
+
+[![decode: ~118 tok/s](https://img.shields.io/badge/decode-~118%20tok%2Fs-2EA043?style=for-the-badge)](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4) [![thinking on: ~121 tok/s](https://img.shields.io/badge/thinking%20on-~121%20tok%2Fs-1F6FEB?style=for-the-badge)](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4)
+
+**[Volta sPLIt](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4)** serves the same DeepSeek-V4.1-Flash-1017 on eight V100-SXM2-32GB cards from 2018: ISTA-DASLab's
+GSQ-RCO GGUF (IQ2_XXS experts, IQ4_NL Engram), every expert resident in GPU memory, split pipeline-parallel 2 x
+tensor-parallel 4 across two NVLink boards, on our port of 1Cat-vLLM #1277. Several of its speed levers are ports of
+DGX sPLIce's (coupled sampled drafts, plan fusion, the router floor, coupled-draft sharding), and its long-prompt numbers
+were taken with the same tools ([dsv41-longctx-bench-tools](https://github.com/ProprietaryLegal/dsv41-longctx-bench-tools)).
+
+| one request at a time | Volta sPLIt (8x V100) | DGX sPLIce (2x DGX Spark) |
+| --- | ---: | ---: |
+| decode, thinking off, A/B harness (T=0) | ~118 tok/s ESTIMATED; ~114 MEASURED before its last kernel change | – |
+| decode, thinking on, A/B harness (T=1) | ~121 tok/s ESTIMATED; ~117 MEASURED | – |
+| decode, thinking high, 124-token legal prompt (`bench2.py`) | 84.6-84.7 tok/s | 49.7-53.1 tok/s |
+| the same at 32K / 150K | 86.8-87.3 / 79.8-80.3 tok/s | 58.7-66.2 / 53.0-54.9 tok/s |
+| first token at 32K / 150K | 22.3-22.5 s / 111.1-111.7 s | 14.5 s / 68.6 s |
+| streams | 1 | up to 4 |
+
+<sub>Volta sPLIt: MEASURED 2026-11-03 on its host, before its last kernel change; DGX sPLIce: MEASURED 2026-10-23 with the
+same tools and conditions (temperature 1, thinking high, 1,500 tokens, cold prompts). Different quantizations of the same
+model. The Sparks read prompts faster and serve several streams; the V100s decode one stream faster.</sub>
+
+### Head-to-head benchmarks: in progress
+
+A same-day, same-tools comparison of the two builds (decode by text type, long prompts, prefill, and a legal benchmark if
+one runs on both) starts when Volta sPLIt's current test queue finishes. Results will replace this paragraph.
 
 ## Quality
 
@@ -606,7 +636,7 @@ history and their own tests; their code is included here as it runs in productio
 | [dsv41-native-1017-drafter-sm86](https://github.com/ProprietaryLegal/dsv41-native-1017-drafter-sm86), [dsv41-exact-acceptance-ceiling](https://github.com/ProprietaryLegal/dsv41-exact-acceptance-ceiling) | research only, not serving |
 | [dsv41-longctx-bench-tools](https://github.com/ProprietaryLegal/dsv41-longctx-bench-tools), [dsv41-window-harness](https://github.com/ProprietaryLegal/dsv41-window-harness) | earlier measurement tools |
 | [deepseek-v41-1017-dgx-spark](https://github.com/ProprietaryLegal/deepseek-v41-1017-dgx-spark), [dgx-spark-deepseek-v41](https://github.com/ProprietaryLegal/dgx-spark-deepseek-v41) | our forks of the HeNryous image and the sudoingX launcher |
-| [Volta sPLIce](https://github.com/ProprietaryLegal/Volta-sPLIce-DeepSeek-V4.1-Flash-8xV100-SXM2-PP2xTP4-resident-Engram) | the sister project: the same model on 8x V100-SXM2-32GB (PP2 x TP4, Engram resident in host RAM) |
+| [Volta sPLIt](https://github.com/ProprietaryLegal/Volta-sPLIt-DeepSeek-V4.1-Flash-1017-8xV100-SXM2-PP2xTP4) | the sister build: the same model on 8x V100-SXM2-32GB, PP2 x TP4, ~118 tok/s decode |
 
 ## Credits and licence
 
