@@ -2,6 +2,15 @@
 
 Dates are UTC. "Production" is the commit serving on our two Sparks at the time.
 
+## 2026-11-04: Legora BAR public tax case
+
+- MEASURED, 2026-11-04: one run of Legora's public BAR case (Freshworks FY2023 transfer pricing Master File, 175 rubric
+  criteria) on production. 129 / 175 passed (73.7 % unweighted, 74.8 % importance-weighted), FINISHED in 112 turns.
+  Added `docs/legora-bar.md`, a README section, and `legora-bar/`: the harness, the grading pack, all 175 verdicts, the
+  Master File and the transcript. The server address in `run.json` is replaced by `<head>`, and `extract_matter.py`'s
+  default tokenizer path is an `/opt/dsv41/` placeholder. `legbar_agent.py` is byte-identical to the file that ran.
+- The production description elsewhere in this README is unchanged by this entry.
+
 ## 2026-11-01: the repository's new name, and the xgrammar flag in the launch file
 
 - Renamed on GitHub to `DGX-sPLIce-DeepSeek-V4.1-Flash-2xDGX-Spark-2xRTX3090-drafter-x86-offload`, so the name says

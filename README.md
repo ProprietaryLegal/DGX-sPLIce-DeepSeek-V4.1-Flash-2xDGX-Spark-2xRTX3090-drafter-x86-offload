@@ -107,6 +107,25 @@ vocabulary. A same-test run of bertholomus's and MiaAI's weights on our panels i
 measure the weights. Speculative decoding does not change them at temperature 0 as far as the engine's identity tests
 show, and we claim nothing beyond those tests.
 
+## Legal agent task: Legora BAR public tax case
+
+[Legora's BAR](https://legora.com/bar) public case ([legora-oss/legora-bar-tax-case](https://github.com/legora-oss/legora-bar-tax-case))
+asks for a full transfer pricing Master File for the Freshworks Group, FY2023, from a 72-file matter folder of about 1.33 M
+tokens, graded on 175 expert-written criteria. One run on this build (2026-11-04, thinking on at effort 50, our open
+agent harness, a Claude Opus 5.5 judge using the rubric's own grading guidance):
+
+| | Passed | Score |
+|-|-|-|
+| All 175 criteria, unweighted | **129 / 175** | **73.7 %** |
+| Importance-weighted (high 3, medium 2, low 1) | 315 / 421 | 74.8 % |
+| High-importance criteria | 60 / 74 | 81.1 % |
+
+The run took 112 turns and 27.7 minutes, with 87,596 output tokens and no tool errors. The one independent public
+table for this case ([Overfitting Dicta](https://overfittingdicta.com/)) has the frontier models at 48.0-71.4 % unweighted
+(Opus 5.5 Xhigh at 125 / 175). It uses a different, unnamed harness and judge, so read that as "in the same range", not as a ranking.
+Per-theme scores, the misses, the comparison table and its caveats, the harness, every verdict, the model's Master File
+and the full transcript are in [docs/legora-bar.md](docs/legora-bar.md) and [`legora-bar/`](legora-bar/).
+
 ## Head-to-head
 
 Three builds of DeepSeek-V4.1-Flash-1017 on two DGX Sparks, every metric any of them publishes. MiaAI's numbers come
@@ -577,8 +596,9 @@ store token counts and timings, never generated text.
 | `tools/` | `sparkbench.py` (sparkDash protocol), `bench.py` (our cells and a MiaAI-conditions profile), `node_watch.py`, `fake_server.py` and tests |
 | `offload/` | every production component, each with a README: Engram, transport, drafter, async proxy, KV packing, upstream patches; the prefix tier's launcher glue |
 | `bench.py`, `quality.py`, `functest.py`, `verify_hashes.py` | the older single-stream bench, output checks, function tests, model hash checks |
-| `docs/` | [install](docs/install.md), [measurements](docs/measurements.md), [comparison](docs/comparison.md), [architecture](docs/architecture.md), [operations](docs/operations.md), [publication](docs/publication.md) |
+| `docs/` | [install](docs/install.md), [measurements](docs/measurements.md), [comparison](docs/comparison.md), [architecture](docs/architecture.md), [operations](docs/operations.md), [publication](docs/publication.md), [Legora BAR](docs/legora-bar.md) |
 | `runs/` | raw benchmark JSON files, one per run, with their conditions |
+| `legora-bar/` | the Legora BAR public-case harness, grading pack, verdicts, output and transcript ([docs/legora-bar.md](docs/legora-bar.md)) |
 | `.publication/SOURCE.json` | what this tree was exported from and what was removed or rewritten for publication |
 
 ## Tests

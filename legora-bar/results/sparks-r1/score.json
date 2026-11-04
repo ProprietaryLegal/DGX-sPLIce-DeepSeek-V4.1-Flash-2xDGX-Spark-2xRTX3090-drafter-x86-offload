@@ -1,0 +1,90 @@
+{
+ "criteria": 175,
+ "pass_count": 129,
+ "fail_count": 46,
+ "ungradable_count": 0,
+ "weights": {
+  "high": 3,
+  "medium": 2,
+  "low": 1
+ },
+ "weighted_pct": 74.82,
+ "weighted_pct_graded_only": 74.82,
+ "by_importance": {
+  "medium": {
+   "pass": 66,
+   "of": 98
+  },
+  "low": {
+   "pass": 3,
+   "of": 3
+  },
+  "high": {
+   "pass": 60,
+   "of": 74
+  }
+ },
+ "by_theme": {
+  "1. Template hygiene and scope": {
+   "n": 6,
+   "pass": 6,
+   "w": 10,
+   "pw": 10
+  },
+  "2. Group perimeter, structure and workforce": {
+   "n": 37,
+   "pass": 23,
+   "w": 80,
+   "pw": 51
+  },
+  "3. Business context and functional analysis": {
+   "n": 22,
+   "pass": 20,
+   "w": 55,
+   "pw": 51
+  },
+  "4. Intangibles, DEMPE and agreements": {
+   "n": 21,
+   "pass": 17,
+   "w": 54,
+   "pw": 45
+  },
+  "5. Transfer pricing policy and results": {
+   "n": 27,
+   "pass": 20,
+   "w": 65,
+   "pw": 50
+  },
+  "6. Financing and treasury": {
+   "n": 19,
+   "pass": 10,
+   "w": 43,
+   "pw": 21
+  },
+  "7. Financial data": {
+   "n": 11,
+   "pass": 10,
+   "w": 23,
+   "pw": 21
+  },
+  "8. Tax positions": {
+   "n": 10,
+   "pass": 3,
+   "w": 29,
+   "pw": 9
+  },
+  "9. Negative space: statements the master file must not make": {
+   "n": 18,
+   "pass": 17,
+   "w": 54,
+   "pw": 51
+  },
+  "10. Hedging guards: established facts that must be stated without confirmation flags": {
+   "n": 4,
+   "pass": 3,
+   "w": 8,
+   "pw": 6
+  }
+ },
+ "label": "sparks-r1"
+}
